@@ -12,6 +12,6 @@ func NewRouter(e *echo.Echo, c controller.AppController) *echo.Echo {
 	e.Use(middleware.Recover())
 
 	e.GET("/pokemons", func(context echo.Context) error { return c.Pokemon.GetPokemons(context) })
-	e.GET("/pokemons/:id", func(context echo.Context) error { return c.Pokemon.GetPokemonById(context, context.Param("id")) })
+	e.GET("/pokemons/:id", func(context echo.Context) error { return c.Pokemon.GetPokemonById(context) })
 	return e
 }

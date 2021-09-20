@@ -12,7 +12,7 @@ type pokemonController struct {
 
 type PokemonController interface {
 	GetPokemons(c Context) error
-	GetPokemonById(c Context, id string) error
+	GetPokemonById(c Context) error
 }
 
 func NewPokemonController(pi interactor.PokemonInteractor) PokemonController {
@@ -30,8 +30,9 @@ func (pc *pokemonController) GetPokemons(c Context) error {
 	return c.JSON(http.StatusOK, p)
 }
 
-func (pc *pokemonController) GetPokemonById(c Context, id string) error {
+func (pc *pokemonController) GetPokemonById(c Context) error {
 	var p *model.Pokemon
+	id := c.Param("id")
 
 	p, err := pc.pokemonInteractor.GetById(p, id)
 
