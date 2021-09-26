@@ -1,9 +1,9 @@
 package main
 
 import (
-	"alexis.zapata-github.com/capstone-project/infrastructure/router"
-	"alexis.zapata-github.com/capstone-project/registry"
 	"fmt"
+	"github.com/AlexisDragneel/academy-go-q3202/infrastructure/router"
+	"github.com/AlexisDragneel/academy-go-q3202/registry"
 	"github.com/labstack/echo/v4"
 )
 

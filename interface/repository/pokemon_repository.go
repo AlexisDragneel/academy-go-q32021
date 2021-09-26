@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"alexis.zapata-github.com/capstone-project/domain/model"
-	"alexis.zapata-github.com/capstone-project/usecase/repository"
 	"encoding/csv"
+	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
+	"github.com/AlexisDragneel/academy-go-q3202/usecase/repository"
 	"os"
 	"strconv"
 )

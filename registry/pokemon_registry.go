@@ -1,11 +1,11 @@
 package registry
 
 import (
-	"alexis.zapata-github.com/capstone-project/interface/controller"
-	"alexis.zapata-github.com/capstone-project/interface/gateway"
-	ir "alexis.zapata-github.com/capstone-project/interface/repository"
-	"alexis.zapata-github.com/capstone-project/usecase/interactor"
-	ur "alexis.zapata-github.com/capstone-project/usecase/repository"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/controller"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/gateway"
+	ir "github.com/AlexisDragneel/academy-go-q3202/interface/repository"
+	"github.com/AlexisDragneel/academy-go-q3202/usecase/interactor"
+	ur "github.com/AlexisDragneel/academy-go-q3202/usecase/repository"
 )
 
 func (r *registry) NewPokemonController() controller.PokemonController {

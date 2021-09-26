@@ -1,8 +1,8 @@
 package interactor
 
 import (
-	"alexis.zapata-github.com/capstone-project/domain/model"
-	"alexis.zapata-github.com/capstone-project/usecase/repository"
+	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
+	"github.com/AlexisDragneel/academy-go-q3202/usecase/repository"
 )
 
 type pokemonInteractor struct {

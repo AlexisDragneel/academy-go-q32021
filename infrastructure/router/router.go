@@ -1,7 +1,7 @@
 package router
 
 import (
-	"alexis.zapata-github.com/capstone-project/interface/controller"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/controller"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

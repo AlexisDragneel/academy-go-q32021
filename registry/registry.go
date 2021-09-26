@@ -1,6 +1,6 @@
 package registry
 
-import "alexis.zapata-github.com/capstone-project/interface/controller"
+import "github.com/AlexisDragneel/academy-go-q3202/interface/controller"
 
 type registry struct {
 }

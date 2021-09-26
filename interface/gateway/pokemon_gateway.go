@@ -1,11 +1,11 @@
 package gateway
 
 import (
-	"alexis.zapata-github.com/capstone-project/domain/gateway"
-	"alexis.zapata-github.com/capstone-project/domain/model"
-	"alexis.zapata-github.com/capstone-project/interface/context"
 	"encoding/json"
 	"fmt"
+	"github.com/AlexisDragneel/academy-go-q3202/domain/gateway"
+	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/context"
 	"io/ioutil"
 	"net/http"
 	"strconv"

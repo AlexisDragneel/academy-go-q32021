@@ -1,4 +1,4 @@
-module alexis.zapata-github.com/capstone-project
+module github.com/AlexisDragneel/academy-go-q3202
 
 go 1.16
 

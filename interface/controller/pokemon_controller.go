@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"alexis.zapata-github.com/capstone-project/domain/model"
-	"alexis.zapata-github.com/capstone-project/interface/context"
-	"alexis.zapata-github.com/capstone-project/interface/gateway"
-	"alexis.zapata-github.com/capstone-project/usecase/interactor"
-	"alexis.zapata-github.com/capstone-project/utils/errors"
+	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/context"
+	"github.com/AlexisDragneel/academy-go-q3202/interface/gateway"
+	"github.com/AlexisDragneel/academy-go-q3202/usecase/interactor"
+	"github.com/AlexisDragneel/academy-go-q3202/utils/errors"
 	"net/http"
 )
 

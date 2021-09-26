@@ -1,6 +1,6 @@
 package repository
 
-import "alexis.zapata-github.com/capstone-project/domain/model"
+import "github.com/AlexisDragneel/academy-go-q3202/domain/model"
 
 type PokemonRepository interface {
 	FindAll(p []*model.Pokemon) ([]*model.Pokemon, error)
