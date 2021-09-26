@@ -76,8 +76,28 @@ func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokem
 	return p, nil
 }
 
-func readData(filName string) ([][]string, error) {
-	f, err := os.Open(filName)
+func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
+
+	f, err := openFile("db.csv", os.O_APPEND)
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+	for _, pokemon := range p {
+		if err := w.Write(pokemon.ToStringArr()); err != nil {
+			return 0, err
+		}
+	}
+	return len(p), nil
+}
+
+func readData(fileName string) ([][]string, error) {
+	f, err := openFile(fileName, os.O_WRONLY)
 
 	if err != nil {
 		return nil, err
@@ -99,4 +119,13 @@ func readData(filName string) ([][]string, error) {
 	}
 
 	return records, nil
+}
+
+func openFile(fileName string, access int) (*os.File, error) {
+	switch access {
+	case os.O_APPEND:
+		return os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0600)
+	default:
+		return os.Open(fileName)
+	}
 }
