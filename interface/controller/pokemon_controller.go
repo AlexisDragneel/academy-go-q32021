@@ -5,7 +5,7 @@ import (
 	"github.com/AlexisDragneel/academy-go-q3202/interface/context"
 	"github.com/AlexisDragneel/academy-go-q3202/interface/gateway"
 	"github.com/AlexisDragneel/academy-go-q3202/usecase/interactor"
-	"github.com/AlexisDragneel/academy-go-q3202/utils/errors"
+	"github.com/AlexisDragneel/academy-go-q3202/utils"
 	"net/http"
 )
 
@@ -46,7 +46,7 @@ func (pc *pokemonController) GetPokemonById(c context.Context) error {
 	}
 
 	if p == nil {
-		response := &errors.HttpError{}
+		response := &utils.HttpError{}
 		return c.JSON(http.StatusNotFound, response.Fill404Error())
 	}
 

@@ -9,14 +9,15 @@ import (
 )
 
 type pokemonRepository struct {
+	file *os.File
 }
 
-func NewPokemonRepository() repository.PokemonRepository {
-	return &pokemonRepository{}
+func NewPokemonRepository(f *os.File) repository.PokemonRepository {
+	return &pokemonRepository{f}
 }
 
 func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, error) {
-	records, err := readData("db.csv")
+	records, err := readData(pr.file)
 
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, erro
 }
 
 func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokemon, error) {
-	records, err := readData("db.csv")
+	records, err := readData(pr.file)
 
 	if err != nil {
 		return nil, err
@@ -78,15 +79,15 @@ func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokem
 
 func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 
-	f, err := openFile("db.csv", os.O_APPEND)
+	//f, err := openFile("db.csv")
+	//
+	//if err != nil {
+	//	return 0, err
+	//}
 
-	if err != nil {
-		return 0, err
-	}
+	//defer f.Close()
 
-	defer f.Close()
-
-	w := csv.NewWriter(f)
+	w := csv.NewWriter(pr.file)
 	defer w.Flush()
 	for _, pokemon := range p {
 		if err := w.Write(pokemon.ToStringArr()); err != nil {
@@ -96,14 +97,14 @@ func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 	return len(p), nil
 }
 
-func readData(fileName string) ([][]string, error) {
-	f, err := openFile(fileName, os.O_WRONLY)
+func readData(f *os.File) ([][]string, error) {
+	//f, err := openFile(fileName)
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
+	//defer f.Close()
 
 	r := csv.NewReader(f)
 
@@ -121,11 +122,6 @@ func readData(fileName string) ([][]string, error) {
 	return records, nil
 }
 
-func openFile(fileName string, access int) (*os.File, error) {
-	switch access {
-	case os.O_APPEND:
-		return os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0600)
-	default:
-		return os.Open(fileName)
-	}
+func openFile(fileName string) (*os.File, error) {
+	return os.OpenFile(fileName, os.O_RDWR|os.O_APPEND, 0600)
 }
