@@ -9,15 +9,14 @@ import (
 )
 
 type pokemonRepository struct {
-	file *os.File
 }
 
-func NewPokemonRepository(f *os.File) repository.PokemonRepository {
-	return &pokemonRepository{f}
+func NewPokemonRepository() repository.PokemonRepository {
+	return &pokemonRepository{}
 }
 
 func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, error) {
-	records, err := readData(pr.file)
+	records, err := readData("db.csv")
 
 	if err != nil {
 		return nil, err
@@ -42,14 +41,8 @@ func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, erro
 
 }
 
-func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokemon, error) {
-	records, err := readData(pr.file)
-
-	if err != nil {
-		return nil, err
-	}
-
-	pokemonId, err := strconv.ParseUint(id, 10, 32)
+func (pr *pokemonRepository) FindById(p *model.Pokemon) (*model.Pokemon, error) {
+	records, err := readData("db.csv")
 
 	if err != nil {
 		return nil, err
@@ -62,14 +55,11 @@ func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokem
 			return nil, err
 		}
 
-		if csvId != pokemonId {
+		if csvId != p.ID {
 			continue
 		}
 
-		p = &model.Pokemon{
-			ID:   csvId,
-			Name: record[1],
-		}
+		p.Name = record[1]
 
 		break
 	}
@@ -79,15 +69,15 @@ func (pr *pokemonRepository) FindById(p *model.Pokemon, id string) (*model.Pokem
 
 func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 
-	//f, err := openFile("db.csv")
-	//
-	//if err != nil {
-	//	return 0, err
-	//}
+	f, err := openFile("db.csv")
 
-	//defer f.Close()
+	if err != nil {
+		return 0, err
+	}
 
-	w := csv.NewWriter(pr.file)
+	defer f.Close()
+
+	w := csv.NewWriter(f)
 	defer w.Flush()
 	for _, pokemon := range p {
 		if err := w.Write(pokemon.ToStringArr()); err != nil {
@@ -97,14 +87,14 @@ func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 	return len(p), nil
 }
 
-func readData(f *os.File) ([][]string, error) {
-	//f, err := openFile(fileName)
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
+func readData(fileName string) ([][]string, error) {
+	f, err := openFile(fileName)
 
-	//defer f.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	defer f.Close()
 
 	r := csv.NewReader(f)
 

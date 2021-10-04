@@ -7,6 +7,7 @@ import (
 	"github.com/AlexisDragneel/academy-go-q3202/usecase/interactor"
 	"github.com/AlexisDragneel/academy-go-q3202/utils"
 	"net/http"
+	"strconv"
 )
 
 type pokemonController struct {
@@ -36,10 +37,18 @@ func (pc *pokemonController) GetPokemons(c context.Context) error {
 }
 
 func (pc *pokemonController) GetPokemonById(c context.Context) error {
-	var p *model.Pokemon
-	id := c.Param("id")
 
-	p, err := pc.pokemonInteractor.GetById(p, id)
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+
+	if err != nil {
+		return err
+	}
+
+	p := &model.Pokemon{
+		ID: id,
+	}
+
+	p, err = pc.pokemonInteractor.GetById(p)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
