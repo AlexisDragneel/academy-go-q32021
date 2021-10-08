@@ -1,6 +1,6 @@
 package registry
 
-import "alexis.zapata-github.com/capstone-project/interface/controller"
+import "github.com/AlexisDragneel/academy-go-q3202/interface/controller"
 
 type registry struct {
 }
@@ -9,6 +9,7 @@ type Registry interface {
 	NewAppController() controller.AppController
 }
 
+// NewRegistry function that initialize the registry for the application
 func NewRegistry() Registry {
 	return &registry{}
 }
