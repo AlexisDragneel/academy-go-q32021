@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/labstack/echo/v4"
+
 	"github.com/AlexisDragneel/academy-go-q3202/infrastructure/router"
 	"github.com/AlexisDragneel/academy-go-q3202/registry"
-	"github.com/labstack/echo/v4"
 )
 
 func main() {

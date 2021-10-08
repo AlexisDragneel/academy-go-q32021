@@ -11,10 +11,12 @@ import (
 type pokemonRepository struct {
 }
 
+// NewPokemonRepository expose the creation of the repository to handle the dependency injection
 func NewPokemonRepository() repository.PokemonRepository {
 	return &pokemonRepository{}
 }
 
+// FindAll opens a file and read the whole file and convert the information to and array of pokemons
 func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, error) {
 	records, err := readData("db.csv")
 
@@ -41,6 +43,7 @@ func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, erro
 
 }
 
+// FindById opens a file a read the data until finds the expected pokemon by id
 func (pr *pokemonRepository) FindById(p *model.Pokemon) (*model.Pokemon, error) {
 	records, err := readData("db.csv")
 
@@ -67,6 +70,7 @@ func (pr *pokemonRepository) FindById(p *model.Pokemon) (*model.Pokemon, error) 
 	return p, nil
 }
 
+// PostPokemons receive an array of pokemons and append this information to the corresponding file
 func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 
 	f, err := openFile("db.csv")

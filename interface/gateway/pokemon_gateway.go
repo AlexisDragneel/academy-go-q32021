@@ -20,10 +20,12 @@ type PokemonGateway interface {
 	FetchPokemons(p []*model.Pokemon, c context.Context) ([]*model.Pokemon, error)
 }
 
+// NewPokemonGateway function that creates a new instance of the gateway for manage the dependency injection
 func NewPokemonGateway() PokemonGateway {
 	return &pokemonGateway{}
 }
 
+// FetchPokemons function that receives the manage an external api call for getting a list of pokemons
 func (pg *pokemonGateway) FetchPokemons(p []*model.Pokemon, c context.Context) ([]*model.Pokemon, error) {
 
 	offset, err := strconv.ParseUint(c.QueryParam("offset"), 10, 64)

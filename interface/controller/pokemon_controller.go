@@ -21,10 +21,12 @@ type PokemonController interface {
 	PostPokemons(c context.Context) error
 }
 
+// NewPokemonController creates a new instance of the pokemon controller to manage the dependency injections
 func NewPokemonController(pi interactor.PokemonInteractor, pg gateway.PokemonGateway) PokemonController {
 	return &pokemonController{pi, pg}
 }
 
+// GetPokemons function that communicates to the interactor for getting all the pokemons for the csv file
 func (pc *pokemonController) GetPokemons(c context.Context) error {
 	var p []*model.Pokemon
 
@@ -36,6 +38,7 @@ func (pc *pokemonController) GetPokemons(c context.Context) error {
 	return c.JSON(http.StatusOK, p)
 }
 
+// GetPokemonById function that communicates to the interactor for getting a pokemon based on the id received
 func (pc *pokemonController) GetPokemonById(c context.Context) error {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -62,6 +65,7 @@ func (pc *pokemonController) GetPokemonById(c context.Context) error {
 	return c.JSON(http.StatusOK, p)
 }
 
+// PostPokemons function that calls a gateway to get information and call the interactor for append the information to the csv file
 func (pc *pokemonController) PostPokemons(c context.Context) error {
 	var p []*model.Pokemon
 

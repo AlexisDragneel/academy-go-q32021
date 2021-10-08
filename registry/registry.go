@@ -9,6 +9,7 @@ type Registry interface {
 	NewAppController() controller.AppController
 }
 
+// NewRegistry function that initialize the registry for the application
 func NewRegistry() Registry {
 	return &registry{}
 }
