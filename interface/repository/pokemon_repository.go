@@ -2,14 +2,15 @@ package repository
 
 import (
 	"encoding/csv"
-	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
-	"github.com/AlexisDragneel/academy-go-q3202/usecase/repository"
-	"github.com/AlexisDragneel/academy-go-q3202/utils"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
+	"github.com/AlexisDragneel/academy-go-q3202/usecase/repository"
+	"github.com/AlexisDragneel/academy-go-q3202/utils"
 )
 
 type pokemonRepository struct {
@@ -129,10 +130,12 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 		go worker(w, r, jobs, lines)
 	}
 
-	for j := int64(1); j <= items; j++ {
-		jobs <- j
-	}
-	close(jobs)
+	go func() {
+		for j := int64(0); j < items; j++ {
+			jobs <- j
+		}
+		close(jobs)
+	}()
 
 	go func() {
 		wg.Wait()
@@ -176,6 +179,7 @@ func openFile(fileName string) (*os.File, error) {
 
 func openReader(f *os.File) (*csv.Reader, error) {
 	r := csv.NewReader(f)
+	r.FieldsPerRecord = -1
 	// skip first line
 	if _, err := r.Read(); err != nil {
 		return nil, err
@@ -185,6 +189,10 @@ func openReader(f *os.File) (*csv.Reader, error) {
 
 func parsePokemons(p []*model.Pokemon, t string, records [][]string) ([]*model.Pokemon, error) {
 	for _, record := range records {
+		if len(record) != 2 {
+			continue
+		}
+
 		id, err := strconv.ParseUint(record[0], 10, 32)
 
 		if err != nil {
