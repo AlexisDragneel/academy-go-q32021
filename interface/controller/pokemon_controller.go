@@ -46,22 +46,22 @@ func (pc *pokemonController) GetAsyncPokemons(c context.Context) error {
 
 	items, err := strconv.ParseInt(c.QueryParam("items"), 10, 64)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.CreateError(http.StatusBadRequest, "query param 'items' must contain a value and  should be number"))
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items' must contain a value and  should be number"))
 	}
 
 	itemsWorker, err := strconv.ParseInt(c.QueryParam("items_per_workers"), 10, 64)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.CreateError(http.StatusBadRequest, "query param 'items_per_workers' must contain a value and  should be number"))
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items_per_workers' must contain a value and  should be number"))
 	}
 
 	t := strings.ToLower(c.QueryParam("type"))
 	if t != "" && strings.Compare(t, utils.Odd) != 0 && strings.Compare(t, utils.Even) != 0 {
-		return c.JSON(http.StatusBadRequest, utils.CreateError(http.StatusBadRequest, "query param 'type' only supports 'even' and 'odd'"))
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'type' only supports 'even' and 'odd'"))
 	}
 
 	p, err = pc.pokemonInteractor.GetAsync(p, t, items, itemsWorker)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.CreateError(http.StatusInternalServerError, err.Error()))
+		return c.JSON(http.StatusInternalServerError, utils.CreateResponse(http.StatusInternalServerError, err.Error()))
 	}
 
 	return c.JSON(http.StatusOK, p)
@@ -73,7 +73,7 @@ func (pc *pokemonController) GetPokemonById(c context.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.CreateError(http.StatusInternalServerError, err.Error()))
+		return c.JSON(http.StatusInternalServerError, utils.CreateResponse(http.StatusInternalServerError, err.Error()))
 	}
 
 	p := &model.Pokemon{
@@ -83,11 +83,11 @@ func (pc *pokemonController) GetPokemonById(c context.Context) error {
 	p, err = pc.pokemonInteractor.GetById(p)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.CreateError(http.StatusInternalServerError, err.Error()))
+		return c.JSON(http.StatusInternalServerError, utils.CreateResponse(http.StatusInternalServerError, err.Error()))
 	}
 
 	if p == nil {
-		return c.JSON(http.StatusNotFound, utils.CreateError(http.StatusNotFound, "Item Not Found"))
+		return c.JSON(http.StatusNotFound, utils.CreateResponse(http.StatusNotFound, "Item Not Found"))
 	}
 
 	return c.JSON(http.StatusOK, p)
@@ -99,13 +99,13 @@ func (pc *pokemonController) PostPokemons(c context.Context) error {
 
 	p, err := pc.pokemonGateway.FetchPokemons(p, c)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.CreateError(http.StatusInternalServerError, err.Error()))
+		return c.JSON(http.StatusInternalServerError, utils.CreateResponse(http.StatusInternalServerError, err.Error()))
 	}
 
 	quantity, err := pc.pokemonInteractor.PostPokemons(p)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.CreateError(http.StatusInternalServerError, err.Error()))
+		return c.JSON(http.StatusInternalServerError, utils.CreateResponse(http.StatusInternalServerError, err.Error()))
 	}
 
 	return c.JSON(http.StatusOK, quantity)
