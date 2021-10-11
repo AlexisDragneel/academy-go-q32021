@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
 	"github.com/AlexisDragneel/academy-go-q3202/interface/context"
 	"github.com/AlexisDragneel/academy-go-q3202/interface/gateway"
@@ -9,6 +10,13 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+)
+
+const (
+	maxItemsPerWorker = 15
+	itemsParam        = "items"
+	itemsWorkerParam  = "items_per_workers"
+	typeParam         = "type"
 )
 
 type pokemonController struct {
@@ -44,17 +52,25 @@ func (pc *pokemonController) GetPokemons(c context.Context) error {
 func (pc *pokemonController) GetAsyncPokemons(c context.Context) error {
 	var p []*model.Pokemon
 
-	items, err := strconv.ParseInt(c.QueryParam("items"), 10, 64)
+	items, err := strconv.ParseInt(c.QueryParam(itemsParam), 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items' must contain a value and  should be number"))
 	}
 
-	itemsWorker, err := strconv.ParseInt(c.QueryParam("items_per_workers"), 10, 64)
+	itemsWorker, err := strconv.ParseInt(c.QueryParam(itemsWorkerParam), 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items_per_workers' must contain a value and  should be number"))
 	}
 
-	t := strings.ToLower(c.QueryParam("type"))
+	if itemsWorker > maxItemsPerWorker {
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, fmt.Sprintf("items_per_workers could not be more than %v", maxItemsPerWorker)))
+	}
+
+	if itemsWorker > items {
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "items_per_workers couldn't be bigger than items"))
+	}
+
+	t := strings.ToLower(c.QueryParam(typeParam))
 	if t != "" && strings.Compare(t, utils.Odd) != 0 && strings.Compare(t, utils.Even) != 0 {
 		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'type' only supports 'even' and 'odd'"))
 	}

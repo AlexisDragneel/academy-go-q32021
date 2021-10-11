@@ -31,7 +31,7 @@ func (pr *pokemonRepository) FindAll(p []*model.Pokemon) ([]*model.Pokemon, erro
 		return nil, err
 	}
 
-	return parsePokemons(p, "", records)
+	return parsePokemons(p, records)
 }
 
 func (pr *pokemonRepository) FindAllAsync(p []*model.Pokemon, t string, items, itemsWorker int64) ([]*model.Pokemon, error) {
@@ -86,19 +86,27 @@ func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 	return len(p), nil
 }
 
-func worker(id int64, r *csv.Reader, jobs <-chan int64, results chan<- []string) {
+func worker(id int64, r *csv.Reader, t string, jobs <-chan int64, results chan<- []string) {
 	defer wg.Done()
 	for j := range jobs {
 		log.Printf("worker %v starting job %v", id, j)
 
-		line, err := r.Read()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			log.Fatal(err)
-		}
+		for {
+			line, err := r.Read()
+			if err == io.EOF {
+				break
+			}
 
-		results <- line
+			if len(line) != 2 {
+				continue
+			}
+
+			pid, err := strconv.ParseUint(line[0], 10, 32)
+			if shouldBeAdded(t, pid) {
+				results <- line
+				break
+			}
+		}
 	}
 }
 
@@ -127,7 +135,7 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 
 	for w := int64(0); w < workers; w++ {
 		wg.Add(1)
-		go worker(w, r, jobs, lines)
+		go worker(w, r, t, jobs, lines)
 	}
 
 	go func() {
@@ -146,7 +154,7 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 		result = append(result, line)
 	}
 
-	return parsePokemons(p, t, result)
+	return parsePokemons(p, result)
 }
 
 func readData(fileName string) ([][]string, error) {
@@ -187,7 +195,7 @@ func openReader(f *os.File) (*csv.Reader, error) {
 	return r, nil
 }
 
-func parsePokemons(p []*model.Pokemon, t string, records [][]string) ([]*model.Pokemon, error) {
+func parsePokemons(p []*model.Pokemon, records [][]string) ([]*model.Pokemon, error) {
 	for _, record := range records {
 		if len(record) != 2 {
 			continue
@@ -197,10 +205,6 @@ func parsePokemons(p []*model.Pokemon, t string, records [][]string) ([]*model.P
 
 		if err != nil {
 			return nil, err
-		}
-
-		if !shouldBeAdded(t, id) {
-			continue
 		}
 
 		pokemon := &model.Pokemon{
