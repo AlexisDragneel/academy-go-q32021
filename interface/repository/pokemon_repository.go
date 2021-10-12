@@ -112,15 +112,11 @@ func worker(r *csv.Reader, t string, itemsWorker int64, results chan<- []string)
 }
 
 func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWorker int64) ([]*model.Pokemon, error) {
-
 	var result [][]string
-
 	lines := make(chan []string, items)
-
 	workers := items / itemsWorker
 
 	f, err := openFile(fileName)
-
 	if err != nil {
 		return nil, err
 	}
@@ -138,10 +134,10 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 		go worker(r, t, itemsWorker, lines)
 	}
 
-	go func() {
+	go func(lines chan []string) {
 		wg.Wait()
 		close(lines)
-	}()
+	}(lines)
 
 	for line := range lines {
 		result = append(result, line)
