@@ -3,7 +3,6 @@ package repository
 import (
 	"encoding/csv"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"sync"
@@ -17,6 +16,7 @@ type pokemonRepository struct {
 }
 
 var wg sync.WaitGroup
+var lock = new(sync.Mutex)
 
 // NewPokemonRepository expose the creation of the repository to handle the dependency injection
 func NewPokemonRepository() repository.PokemonRepository {
@@ -86,26 +86,27 @@ func (pr *pokemonRepository) PostPokemons(p []*model.Pokemon) (int, error) {
 	return len(p), nil
 }
 
-func worker(id int64, r *csv.Reader, t string, jobs <-chan int64, results chan<- []string) {
+func worker(r *csv.Reader, t string, itemsWorker int64, results chan<- []string) {
 	defer wg.Done()
-	for j := range jobs {
-		log.Printf("worker %v starting job %v", id, j)
+	var lines int64
+	for {
+		if lines == itemsWorker {
+			break
+		}
+		lock.Lock()
+		line, err := r.Read()
+		lock.Unlock()
+		if err == io.EOF {
+			break
+		}
+		if len(line) != 2 {
+			continue
+		}
 
-		for {
-			line, err := r.Read()
-			if err == io.EOF {
-				break
-			}
-
-			if len(line) != 2 {
-				continue
-			}
-
-			pid, err := strconv.ParseUint(line[0], 10, 32)
-			if shouldBeAdded(t, pid) {
-				results <- line
-				break
-			}
+		pid, err := strconv.ParseUint(line[0], 10, 32)
+		if shouldBeAdded(t, pid) {
+			results <- line
+			lines++
 		}
 	}
 }
@@ -114,7 +115,6 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 
 	var result [][]string
 
-	jobs := make(chan int64, items)
 	lines := make(chan []string, items)
 
 	workers := items / itemsWorker
@@ -135,15 +135,8 @@ func readDataAsync(fileName string, p []*model.Pokemon, t string, items, itemsWo
 
 	for w := int64(0); w < workers; w++ {
 		wg.Add(1)
-		go worker(w, r, t, jobs, lines)
+		go worker(r, t, itemsWorker, lines)
 	}
-
-	go func() {
-		for j := int64(0); j < items; j++ {
-			jobs <- j
-		}
-		close(jobs)
-	}()
 
 	go func() {
 		wg.Wait()

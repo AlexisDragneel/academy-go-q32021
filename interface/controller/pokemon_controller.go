@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/AlexisDragneel/academy-go-q3202/domain/model"
 	"github.com/AlexisDragneel/academy-go-q3202/interface/context"
 	"github.com/AlexisDragneel/academy-go-q3202/interface/gateway"
@@ -13,10 +12,9 @@ import (
 )
 
 const (
-	maxItemsPerWorker = 15
-	itemsParam        = "items"
-	itemsWorkerParam  = "items_per_workers"
-	typeParam         = "type"
+	itemsParam       = "items"
+	itemsWorkerParam = "items_per_workers"
+	typeParam        = "type"
 )
 
 type pokemonController struct {
@@ -60,10 +58,6 @@ func (pc *pokemonController) GetAsyncPokemons(c context.Context) error {
 	itemsWorker, err := strconv.ParseInt(c.QueryParam(itemsWorkerParam), 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items_per_workers' must contain a value and  should be number"))
-	}
-
-	if itemsWorker > maxItemsPerWorker {
-		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, fmt.Sprintf("items_per_workers could not be more than %v", maxItemsPerWorker)))
 	}
 
 	if itemsWorker > items {
