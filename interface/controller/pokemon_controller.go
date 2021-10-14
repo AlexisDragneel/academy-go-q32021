@@ -51,13 +51,13 @@ func (pc *pokemonController) GetAsyncPokemons(c context.Context) error {
 	var p []*model.Pokemon
 
 	items, err := strconv.ParseInt(c.QueryParam(itemsParam), 10, 64)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items' must contain a value and  should be number"))
+	if err != nil || items == 0 {
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items' must contain a numeric value and must be greater then 0"))
 	}
 
 	itemsWorker, err := strconv.ParseInt(c.QueryParam(itemsWorkerParam), 10, 64)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items_per_workers' must contain a value and  should be number"))
+	if err != nil || itemsWorker == 0 {
+		return c.JSON(http.StatusBadRequest, utils.CreateResponse(http.StatusBadRequest, "query param 'items_per_workers' must contain a numeric value and must be greater then 0"))
 	}
 
 	if itemsWorker > items {
