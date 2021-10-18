@@ -11,6 +11,7 @@ type pokemonInteractor struct {
 
 type PokemonInteractor interface {
 	Get(p []*model.Pokemon) ([]*model.Pokemon, error)
+	GetAsync(p []*model.Pokemon, t string, items, itemsWorker int64) ([]*model.Pokemon, error)
 	GetById(p *model.Pokemon) (*model.Pokemon, error)
 	PostPokemons(p []*model.Pokemon) (int, error)
 }
@@ -28,6 +29,15 @@ func (pi *pokemonInteractor) Get(p []*model.Pokemon) ([]*model.Pokemon, error) {
 		return nil, err
 	}
 
+	return p, nil
+}
+
+func (pi *pokemonInteractor) GetAsync(p []*model.Pokemon, t string, items, itemsWorker int64) ([]*model.Pokemon, error) {
+
+	p, err := pi.PokemonRepository.FindAllAsync(p, t, items, itemsWorker)
+	if err != nil {
+		return nil, err
+	}
 	return p, nil
 }
 
